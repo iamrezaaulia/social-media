@@ -4,10 +4,45 @@ const { UserInputError } = require('apollo-server');
 
 const User = require('../../models/User');
 const { SECRET_KEY } = require('../../config');
-const { validateRegisterInput } = require('../../helpers/validated');
+const { validateRegisterInput, validateLoginInput } = require('../../helpers/validated');
+
+function generateToken(user) {
+  return jsonWebToken.sign({
+    id: user.id,
+    email: user.email,
+    username: user.username,
+  }, SECRET_KEY, { expiresIn: '1h' });
+}
 
 module.exports = {
   Mutation: {
+    async login(_, { loginInput: { username, password }}) {
+      const { errors, valid } = validateLoginInput(username, password);
+      if(!valid) {
+        throw new UserInputError('Errors', { errors }); 
+      }
+      
+      const user = await User.findOne({ username });
+      if(!user) {
+        errors.general = 'User not found';
+        throw new UserInputError('User not found', { errors });
+      }
+  
+      const matchPasswordWithDB = await bcrypt.compare(password, user.password);
+      if(!matchPasswordWithDB) {
+        errors.general = 'Wrong credential';
+        throw new UserInputError('Wrong credential', { errors });
+      }
+  
+      const token = generateToken(user);
+  
+      return {
+        ...user._doc,
+        id: user._id,
+        token
+      }
+    },
+
     async register(
       _, 
       {
@@ -17,9 +52,7 @@ module.exports = {
           password,
           confirmPassword
         }
-      }, 
-      context, 
-      info
+      }
     ) {
       // Validate user data
       const { errors, valid } = validateRegisterInput(username, email, password, confirmPassword);
@@ -47,11 +80,7 @@ module.exports = {
 
       const result = await newUser.save();
 
-      const token = jsonWebToken.sign({
-        id: result.id,
-        email: result.email,
-        username: result.username,
-      }, SECRET_KEY, { expiresIn: '1h' });
+      const token = generateToken(result);
 
       return {
         ...result._doc,
