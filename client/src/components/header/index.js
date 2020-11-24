@@ -5,7 +5,8 @@ import {
   Group,
   Logo,
   TextLink,
-  ButtonLink
+  ButtonLink,
+  Break
 } from './styles/header';
 
 export default function Header({ children, ...restProps }) {
@@ -30,4 +31,8 @@ Header.TextLink = function HeaderTextLink({ children, ...restProps }) {
 
 Header.ButtonLink = function HeaderButtonLink({ children, ...restProps }) {
   return <ButtonLink {...restProps}>{children}</ButtonLink>;
+};
+
+Header.Break = function HeaderBreak({...restProps }) {
+  return <Break {...restProps} />
 };

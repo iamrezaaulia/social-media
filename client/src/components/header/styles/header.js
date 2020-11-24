@@ -3,7 +3,8 @@ import { Link as ReactRouterLink } from 'react-router-dom';
 
 export const Container = styled.main`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 `;
 
 export const Frame = styled.section`
@@ -27,9 +28,9 @@ export const Group = styled.section`
 `;
 
 export const Logo = styled(ReactRouterLink)`
-  color: #121212;
+  color: rgba(1, 173, 159, 0.9);
   text-decoration: none;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 600;
   cursor: pointer;
 
@@ -41,9 +42,9 @@ export const Logo = styled(ReactRouterLink)`
 export const TextLink = styled(ReactRouterLink)`
   color: #121212;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
-  margin-right: 12px;
+  margin-right: 14px;
   cursor: pointer;
 
   &:hover {
@@ -54,14 +55,14 @@ export const TextLink = styled(ReactRouterLink)`
 export const ButtonLink = styled(ReactRouterLink)`
   display: flex;
   align-items: center;
-  background-color: #01AD9F;
+  background-color: rgba(1, 173, 159, 0.9);
   width: auto;
   height: fit-content;
   color: #ffffff;
   border: 0;
   border-radius: 2px;
   box-sizing: border-box;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   padding: 8px 18px;
   text-decoration: none;
@@ -70,10 +71,15 @@ export const ButtonLink = styled(ReactRouterLink)`
   img {
     margin-left: 8px;
     filter: brightness(0) invert(1);
-    width: 16px;
+    width: 14px;
   }
 
   &:hover {
     text-decoration: underline;
   }
+`;
+
+export const Break = styled.div`
+	flex-basis: 100%;
+	height: 0;
 `;
