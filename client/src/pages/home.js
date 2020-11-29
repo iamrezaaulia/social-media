@@ -1,10 +1,11 @@
 import React from 'react';
-import { HeaderContainer } from '../containers';
+import { HeaderContainer, TweeContainer } from '../containers';
 
 export default function Home() {
   return (
     <>
       <HeaderContainer />
+      <TweeContainer />
     </>
-  )
-}
+  );
+};

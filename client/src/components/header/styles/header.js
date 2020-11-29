@@ -13,9 +13,9 @@ export const Frame = styled.section`
   align-items: center;
   background: #f5f6f8;
   width: 100%;
-  max-width: 1200px;
+  max-width: 468px;
   margin: 16px 0 0;
-  padding: 16px;
+  padding: 16px 0;
   border: 0;
   border-radius: 2px;
   box-sizing: border-box;
@@ -28,10 +28,11 @@ export const Group = styled.section`
 `;
 
 export const Logo = styled(ReactRouterLink)`
-  color: rgba(1, 173, 159, 0.9);
+  color: #1DA1F2;
   text-decoration: none;
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 600;
+  outline: none;
   cursor: pointer;
 
   &:hover {
@@ -55,15 +56,15 @@ export const TextLink = styled(ReactRouterLink)`
 export const ButtonLink = styled(ReactRouterLink)`
   display: flex;
   align-items: center;
-  background-color: rgba(1, 173, 159, 0.9);
+  background-color: #1DA1F2;
   width: auto;
   height: fit-content;
   color: #ffffff;
   border: 0;
   border-radius: 2px;
   box-sizing: border-box;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   padding: 8px 18px;
   text-decoration: none;
   cursor: pointer;
@@ -71,7 +72,7 @@ export const ButtonLink = styled(ReactRouterLink)`
   img {
     margin-left: 8px;
     filter: brightness(0) invert(1);
-    width: 14px;
+    width: 12px;
   }
 
   &:hover {
