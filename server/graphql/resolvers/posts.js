@@ -40,7 +40,7 @@ module.exports = {
         body,
         user: user.id,
         username: user.username,
-        created: new Date().toUTCString()
+        created: new Date().toISOString()
       });
 
       const post = await newPost.save();
@@ -74,7 +74,7 @@ module.exports = {
         } else {
           post.likes.push({
             username: user.username,
-            created: new Date().toUTCString()
+            created: new Date().toISOString()
           })
         }
 
