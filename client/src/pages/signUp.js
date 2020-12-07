@@ -1,63 +1,119 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+
+import * as ROUTES from '../constants/route';
 import { Form } from '../components';
 import { HeaderContainer } from '../containers';
-import * as ROUTES from '../constants/route';
+import { useForm } from '../hooks/useForm';
+import { AuthContext } from '../context/auth';
 
 export default function SignUp() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const history = useHistory();
+  const context = useContext(AuthContext);
 
-  const isInvalid = username === '' || email === '' || password === '' || confirmPassword === '';
+  const [errors, setErrors] = useState({});
+  const { onChange, onSubmit, values } = useForm(handleRegister, {
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
 
-  const handleSignUp = (event) => {
-    event.preventDefault();
-  }
+  const [registerUser, { loading }] = useMutation(SIGN_UP, {
+    update(_, { data : { register : userData } }) {
+      context.login(userData);
+      history.push(ROUTES.LOGIN);
+    },
+    onError(err) {
+      setErrors(err.graphQLErrors[0].extensions.exception.errors);
+    },
+    variables: values
+  });
+
+  function handleRegister() {
+    registerUser();
+  };
 
   return (
     <HeaderContainer>
       <Form>
         <Form.Title>Sign up</Form.Title>
-        {error && <Form.Error> {error} </Form.Error>}
+          {Object.keys(errors).length > 0 && (
+            <Form.Error>
+            {Object.values(errors).map(value =>(
+                <li key={value}> {value} </li>
+            ))}
+            </Form.Error>
+          )}
 
-        <Form.Base onSubmit={handleSignUp} method="POST">
+        <Form.Base onSubmit={onSubmit} method="POST" loading={loading ? 'Loading' : ''}>
           <Form.Input 
             placeholder='Username'
             type='text'
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
+            name='username'
+            value={values.username}
+            error={errors.username}
+            onChange={onChange}
           /> 
           <Form.Input 
             placeholder='Email address'
             type='email'
-            value={email}
-            onChange={({ target }) => setEmail(target.value)}
+            name='email'
+            value={values.email}
+            onChange={onChange}
           /> 
           <Form.Input 
             placeholder='Password'
             type='password'
+            name='password'
             autoComplete='off'
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
+            value={values.password}
+            onChange={onChange}
           />
           <Form.Input 
             placeholder='Confirm Password'
             type='password'
+            name='confirmPassword'
             autoComplete='off'
-            value={confirmPassword}
-            onChange={({ target }) => setConfirmPassword(target.value)}
+            value={values.confirmPassword}
+            onChange={onChange}
           />
-          <Form.Submit type='submit' disabled={isInvalid}>
+          <Form.Submit type='submit'>
             Sign up
           </Form.Submit> 
         </Form.Base>
 
         <Form.Text>
-          Already a user? <Form.Link to={ROUTES.LOGIN}>Log in now</Form.Link>
+          Already a user? 
+          <Form.Link to={ROUTES.LOGIN}>
+            Log in now.
+          </Form.Link>
         </Form.Text>
       </Form>
     </HeaderContainer>
   );
 };
+
+const SIGN_UP = gql`
+  mutation register (
+    $username: String!
+    $email: String!
+    $password: String!
+    $confirmPassword: String!
+  ) {
+    register ( registerInput : {
+      username: $username
+      email: $email
+      password: $password
+      confirmPassword: $confirmPassword
+    }) {
+      id
+      email
+      username
+      token
+      created
+    }
+  }
+`;

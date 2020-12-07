@@ -1,12 +1,20 @@
 import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import moment from 'moment-timezone'
+import moment from 'moment-timezone';
 
 import { Loading, Tweet } from '../components';
 
 export default function TweetContainer() {
   const { loading, data } = useQuery(FETCH_POST_QUERY);
+
+  const likePost = () => {
+    console.log('like post')
+  }
+  
+  const commentPost = () => {
+    console.log('comment post')
+  }
 
   return (
     <>
@@ -24,18 +32,24 @@ export default function TweetContainer() {
                 {post.body}
               </Tweet.Description>
               <Tweet.Group>
-                <Tweet.Time>{moment.tz(post.created, 'Asia/Jakarta').format('MMMM Do YYYY, h:mm:ss a')}</Tweet.Time>
+                <Tweet.Time to={`post/${post.id}`}>
+                  {moment.tz(post.created, 'Asia/Jakarta').format('h:mm A')}
+                </Tweet.Time>
+                <Tweet.Dot />
+                <Tweet.Time to={`post/${post.id}`}>
+                  {moment.tz(post.created, 'Asia/Jakarta').format('MMM D, YYYY')}
+                </Tweet.Time>
               </Tweet.Group>
               <Tweet.Break />
               <Tweet.Icon>
                 <Tweet.IconGroup>
-                  <Tweet.Like />
+                  <Tweet.Like onClick={likePost}/>
                   <Tweet.LikeNumber>
                     {post.likeCount}  
                   </Tweet.LikeNumber>
                 </Tweet.IconGroup>
                 <Tweet.IconGroup>
-                  <Tweet.Comment />
+                  <Tweet.Comment onClick={commentPost}/>
                   <Tweet.CommentNumber>
                     {post.commentCount} people are Comment about this
                   </Tweet.CommentNumber>

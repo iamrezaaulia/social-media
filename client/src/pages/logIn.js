@@ -1,40 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+
+import * as ROUTES from '../constants/route';
 import { Form } from '../components';
 import { HeaderContainer } from '../containers';
-import * as ROUTES from '../constants/route';
+import { useForm } from '../hooks/useForm';
+import { AuthContext } from '../context/auth';
 
-export default function SignUp() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+export default function LogIn() {
+  const history = useHistory();
+  const context = useContext(AuthContext);
 
-  const isInvalid = username === '' || password === '';
+  const [errors, setErrors] = useState({});
+  const { onChange, onSubmit, values } = useForm(handleLogin, {
+    username: '',
+    password: '',
+  });
 
-  const handleLogIn = (event) => {
-    event.preventDefault();
-  }
+  const [loginUser, { loading }] = useMutation(LOGIN, {
+    update(_, { data : { login : userData } }) {
+      context.login(userData);
+      history.push(ROUTES.HOME);
+    },
+    onError(err) {
+      setErrors(err.graphQLErrors[0].extensions.exception.errors);
+    },
+    variables: values
+  });
+
+  function handleLogin() {
+    loginUser();
+  };
 
   return (
     <HeaderContainer>
       <Form>
           <Form.Title>Log in</Form.Title>
-          {error && <Form.Error> {error} </Form.Error>}
+          {Object.keys(errors).length > 0 && (
+            <Form.Error>
+            {Object.values(errors).map(value =>(
+                <li key={value}> {value} </li>
+            ))}
+            </Form.Error>
+          )}
 
-          <Form.Base onSubmit={handleLogIn} method="POST">
+          <Form.Base onSubmit={onSubmit} method="POST" loading={loading ?  'Loading' : ''}>
             <Form.Input 
               placeholder='Username'
               type='text'
-              value={username}
-              onChange={({ target }) => setUsername(target.value)}
+              name='username'
+              value={values.username}
+              onChange={onChange}
             /> 
             <Form.Input 
               placeholder='Password'
               type='password'
+              name='password'
               autoComplete='off'
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
+              value={values.password}
+              onChange={onChange}
             />
-            <Form.Submit type='submit' disabled={isInvalid}>
+            <Form.Submit type='submit'>
               Log in
             </Form.Submit>
           </Form.Base>
@@ -42,10 +70,28 @@ export default function SignUp() {
           <Form.Text>
             New to Social Media ? 
             <Form.Link to={ROUTES.SIGNUP}>
-              Sign up now
+              Sign up now.
             </Form.Link>
           </Form.Text>
         </Form>
     </HeaderContainer>
   );
 };
+
+const LOGIN = gql`
+  mutation login (
+    $username: String!
+    $password: String!
+  ) {
+    login ( loginInput : {
+      username: $username
+      password: $password
+    }) {
+      id
+      email
+      username
+      token
+      created
+    }
+  }
+`;

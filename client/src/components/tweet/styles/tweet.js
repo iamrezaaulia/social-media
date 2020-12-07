@@ -1,5 +1,10 @@
 import styled, { css } from 'styled-components/macro';
-import { HiOutlineChat, HiOutlineHeart, HiOutlineUser } from 'react-icons/hi';
+import { 
+  HiOutlineChat, 
+  HiOutlineHeart, 
+  HiOutlineUser 
+} from 'react-icons/hi';
+import { Link as ReactRouterLink } from 'react-router-dom';
 
 export const Container = styled.main`
   display: flex;
@@ -65,19 +70,24 @@ export const Description = styled.p`
   margin: 10px 0 0;
 `;
 
-export const Time = styled.p`
+export const Time = styled(ReactRouterLink)`
   font-size: 14px;
   font-weight: 400;
   color: #657786;
   white-space: nowrap;
   margin: 8px 0 0;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 export const Dot = styled.div`
   background-color: #657786;
   width: 2px;
   height: 2px;
-  margin: 12px 6px 0;
+  margin: 8px 6px 0;
 `;
 
 export const Break = styled.div`
